@@ -1,0 +1,4 @@
+numpy
+lxml
+six
+jinja2
