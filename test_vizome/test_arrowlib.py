@@ -54,19 +54,19 @@ def arr_eq(arr1, arr2, precision=.001):
 
 def test_arrowmaker():
     for ds in [dataset1, dataset2, dataset3]:
-        ac = ArrowMaker(**ds['config'])
+        maker = ArrowMaker(**ds['config'])
         # result = calc.prototype(400).astype(np.int)
-        results = ac.calc(ds['lengths'])
+        results = maker.calc(ds['lengths'])
         assert arr_eq(results, ds['results'], .001)
-        resultp = ac.prototype(ds['lengths'][0])
+        resultp = maker.prototype(ds['lengths'][0])
         assert arr_eq(resultp, ds['results'][0], .001)
         # assert 1 == 2
 
         for l in np.arange(10, step=.01):
             if l == 0:
                 continue
-            resultp = ac.prototype(l)
-            results = ac.calc([l])
+            resultp = maker.prototype(l)
+            results = maker.calc([l])
             assert arr_eq(results[0], resultp, .001)
             assert arr_eq(results[:, 0, :], 0, .001)
             assert arr_eq(results[:, 7, :], 0, .001)
@@ -75,6 +75,13 @@ def test_arrowmaker():
             assert arr_eq(results[:, 2, 1], -results[:, 4, 1])
             assert arr_eq(results[:, 2, 1], -results[:, 5, 1])
             assert arr_eq(results[:, 6, 1], -ds['config']['height2'])
+
+        for i in range(100):
+            x = np.random.randint(1, 1000)
+            assert np.array_equal(
+                maker.calc([x]),
+                maker.calc([(x, 0)]),
+            )
 
 
 if __name__ == '__main__':

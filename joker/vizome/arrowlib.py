@@ -6,12 +6,59 @@ from __future__ import unicode_literals, print_function
 import numpy as np
 from numpy import tan
 
+"""
+Anatomy of an Arrow
+by Hailong on 2015 Xmas
+
+                           /+ 1                     +
+                         / /                        |
+                       /  /                         |
+                     /   /                          |
+                   /    /                           |
+                 /     /                            | < height2
+               /      /                             |
+             /       / <beta                    3   |
+           /      2 +---------------------------+   |      +
+         / <alpha  /                            |   |      |  < height1
+     0  <---------+-----------------------------+   +      +
+         \         \                            |              alpha < beta
+           \      . 5---------------------------+            height1 < height2
+                  . .                           4
+                  . .
+                  . .
+        + - - - - +     threshold1
+        + - - - - - +   threshold2
+
+        + < - - - - - - length  - - - - - - - > +
+
+
+
+length is the main variable.
+alpha, height2 are always constant
+
+Threshold 2
+As length decreases, point2 and point3 will join, and height1 begin to decrease.
+
+Threshold 1
+As length decreases continuously, height1 will become 0, and beta begin to decrease.
+"""
+
 
 def cot(x):
     return 1./tan(x)
 
 
 def make_array(data):
+    """
+    >>> make_array(3) 
+    array([3])
+    >>>  make_array(i for i in range(3))
+    array([0, 1, 2])
+    >>> make_array([1, 2, 3])
+    array([1, 2, 3]) 
+    >>> make_array(np.arange(3))   # simply pass through
+    array([0, 1, 2])
+    """
     if isinstance(data, np.ndarray):
         arr = data
     elif isinstance(data, (list, int, float)):
@@ -35,7 +82,7 @@ class ArrowMaker(object):
     def __call__(self, arr):
         return self.calc(arr)
 
-    def prototype(self, length):
+    def prototype(self, length=3.):
         """
         For understanding of the formula
         Not intended for actual use
@@ -48,6 +95,7 @@ class ArrowMaker(object):
             data[2] = self.threshold2, self.height1
             data[3] = length, self.height1
 
+        # elif self.threshold1 < length < self.threshold2:
         elif self.threshold1 < length < self.threshold2:
             data[1] = self.height2 * cot(self.alpha), self.height2
             data[2] = length, (length-self.threshold1) * tan(self.beta)
@@ -62,7 +110,7 @@ class ArrowMaker(object):
         data[7] = 0, 0
         return data
 
-    def _calc(self, lengths):
+    def calculate(self, lengths):
         """
         Algorithm
         :param lengths: 1d array, all values should be positive
@@ -103,6 +151,44 @@ class ArrowMaker(object):
     def calc(self, arr):
         """
         :param arr: 1d or 2d array
+       
+        #1
+        .calc([a0_length, a1_length, a2_length, ..]), which is equivolent to
+        .calc([
+            (a0_lenth, 0),
+            (a1_lenth, 0),
+            (a2_lenth, 0),
+        ])
+        
+        
+        #2
+        .calc([
+            (a0x_start, a0x_end),
+            (a1x_start, a1x_end),
+            (a3x_start, a3x_end), ...
+        ])
+        
+        #3 
+        .calc([
+            (a0x_start, a0x_end, a0y),
+            (a1x_start, a1x_end, a1y),
+            (a2x_start, a2x_end, a2y), ...
+        ])
+        
+        :return: a 3d array
+        [
+            [
+                [x0, y0], [x1, y1], [x2, y2], [x3, y3],     #  arrow 1
+                [x4, y4], [x5, y5], [x6, y6], [x7, y7],
+            ],
+            
+            [
+                [x0, y0], [x1, y1], [x2, y2], [x3, y3],     #  arrow 2
+                [x4, y4], [x5, y5], [x6, y6], [x7, y7],
+            ],
+            ...
+        ] 
+        
         """
         arr = make_array(arr)
 
@@ -113,7 +199,7 @@ class ArrowMaker(object):
         if arr.ndim == 1 or arr.shape[-1] == 1:
             lengths = arr.reshape([-1])
             orients = np.sign(lengths)
-            results = self._calc(np.abs(lengths))
+            results = self.calculate(np.abs(lengths))
             results[:, :, 0] *= orients.reshape([-1, 1])
             return results
 
@@ -121,7 +207,7 @@ class ArrowMaker(object):
         if arr.shape[-1] == 2:
             lengths = arr[:, 0] - arr[:, 1]
             orients = np.sign(lengths)  # length can NOT be 0
-            results = self._calc(abs(lengths))
+            results = self.calculate(abs(lengths))
             results[:, :, 0] *= orients.reshape([-1, 1])
             results[:, :, 0] += arr[:, 1].reshape([-1, 1])
             return results
@@ -133,39 +219,3 @@ class ArrowMaker(object):
             return results
 
 
-arrow_anatomy = """
-Anatomy of an Arrow
-by Hailong on 2015 Xmas
-
-                           /+ 1                     +
-                         / /                        |
-                       /  /                         |
-                     /   /                          |
-                   /    /                           |
-                 /     /                            | < height2
-               /      /                             |
-             /       / <beta                    3   |
-           /      2 +---------------------------+   |      +
-         / <alpha  /                            |   |      |  < height1
-     0  <---------+-----------------------------+   +      +
-         \         \                            |              alpha < beta
-           \      . 5---------------------------+            height1 < height2
-                  . .                           4
-                  . .
-                  . .
-        + - - - - +     threshold1
-        + - - - - - +   threshold2
-
-        + < - - - - - - length  - - - - - - - > +
-
-
-
-length is the main variable.
-alpha, height2 are always constant
-
-Threshold 2
-As length decreases, point2 and point3 will join, and height1 begin to decrease.
-
-Threshold 1
-As length decreases continuously, height1 will become 0, and beta begin to decrease.
-"""

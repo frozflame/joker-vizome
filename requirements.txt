@@ -1,4 +1,6 @@
+pandas
 numpy
 lxml
 six
+flask
 jinja2

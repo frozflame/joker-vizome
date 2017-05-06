@@ -50,6 +50,9 @@ config = {
     'namespace_packages': ["joker"],
     'zip_safe': False,
     'install_requires': readfile("requirements.txt"),
+    'entry_points': {
+        'console_scripts': ['vizome=joker.vizome.server:entry_point'],
+    },
     'classifiers': [
         'Programming Language :: Python',
         'Programming Language :: Python :: 2',
