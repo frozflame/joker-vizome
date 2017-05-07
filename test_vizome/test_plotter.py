@@ -7,27 +7,27 @@ import random
 
 import numpy as np
 import pandas
-from joker.vizome.arrowlib import ArrowMaker
-from joker.vizome import prepare
+from joker.vizome.designer import ArrowDesigner
+from joker.vizome.plotter import ArrowPlotter
 
 
-def test_prepare_svg_polygon_data():
-    maker = ArrowMaker()
+def test_prepare_polygon_data():
+    arrow_maker = ArrowDesigner()
     for n in range(5):
-        raw = maker.calc(np.random.rand(n))
-        pdata = list(prepare.prepare_svg_polygon_data(raw))
+        raw = arrow_maker(np.random.rand(n))
+        pdata = list(ArrowPlotter.prepare_polygon_coordinates(raw))
         assert len(pdata) == n
         for s in pdata:
             assert s.count(',') == 8
 
 
-def test_prepare_arrow_maker_data():
+def test_prepare_amk_input():
     df = pandas.DataFrame({
         'start': np.random.rand(5),
         'stop': np.random.rand(5),
         'fr': [random.choice('+-') for _ in range(5)],
     })
-    data = prepare.prepare_arrow_maker_data(df)
+    data = ArrowPlotter.prepare_amk_input(df)
     for ix, fr in enumerate(df['fr']):
         if fr == '+':
             assert data[ix, 0] <= data[ix, 1]
@@ -35,6 +35,14 @@ def test_prepare_arrow_maker_data():
             assert data[ix, 0] >= data[ix, 1]
 
 
+def test_prepare_plot_data():
+    df = ArrowPlotter.read_csv('')
+    print(df)
+    for d in ArrowPlotter.prepare_plot_data(df):
+        print(d)
+
+
 if __name__ == '__main__':
-    test_prepare_arrow_maker_data()
-    test_prepare_svg_polygon_data()
+    test_prepare_amk_input()
+    test_prepare_polygon_data()
+    # test_prepare_plot_data()

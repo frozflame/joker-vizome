@@ -70,7 +70,7 @@ def make_array(data):
     return arr
 
 
-class ArrowMaker(object):
+class ArrowDesigner(object):
     def __init__(self, alpha=.7, beta=1., height1=16, height2=32):
         self.alpha = alpha
         self.beta = beta
@@ -78,9 +78,6 @@ class ArrowMaker(object):
         self.height2 = height2
         self.threshold1 = height2 * (cot(alpha) - cot(beta))
         self.threshold2 = self.threshold1 + height1 * cot(beta)
-
-    def __call__(self, arr):
-        return self.calc(arr)
 
     def prototype(self, length=3.):
         """
@@ -148,9 +145,9 @@ class ArrowMaker(object):
         data[:, 4:7, :] = data[:, 1:4, :][:, ::-1, :] * np.array([1, -1])
         return data
 
-    def calc(self, arr):
+    def __call__(self, awd_in):
         """
-        :param arr: 1d or 2d array
+        :param awd_in: 1d or 2d array
        
         #1
         .calc([a0_length, a1_length, a2_length, ..]), which is equivolent to
@@ -190,32 +187,30 @@ class ArrowMaker(object):
         ] 
         
         """
-        arr = make_array(arr)
+        awd_in = make_array(awd_in)
 
-        if arr.ndim > 2:
+        if awd_in.ndim > 2:
             raise ValueError("number of dimensions of 'arr' should be 1 or 2")
 
         # simply an array of lengths
-        if arr.ndim == 1 or arr.shape[-1] == 1:
-            lengths = arr.reshape([-1])
+        if awd_in.ndim == 1 or awd_in.shape[-1] == 1:
+            lengths = awd_in.reshape([-1])
             orients = np.sign(lengths)
-            results = self.calculate(np.abs(lengths))
-            results[:, :, 0] *= orients.reshape([-1, 1])
-            return results
+            awd_out = self.calculate(np.abs(lengths))
+            awd_out[:, :, 0] *= orients.reshape([-1, 1])
+            return awd_out
 
         # treat last dim as (start, end)
-        if arr.shape[-1] == 2:
-            lengths = arr[:, 0] - arr[:, 1]
+        if awd_in.shape[-1] == 2:
+            lengths = awd_in[:, 0] - awd_in[:, 1]
             orients = np.sign(lengths)  # length can NOT be 0
-            results = self.calculate(abs(lengths))
-            results[:, :, 0] *= orients.reshape([-1, 1])
-            results[:, :, 0] += arr[:, 1].reshape([-1, 1])
-            return results
+            awd_out = self.calculate(abs(lengths))
+            awd_out[:, :, 0] *= orients.reshape([-1, 1])
+            awd_out[:, :, 0] += awd_in[:, 1].reshape([-1, 1])
+            return awd_out
 
         # treat last dim as (x_start, x_end, y)
-        if arr.shape[-1] == 3:
-            results = self.calc(arr[:, :2])
-            results[:, :, 1] += arr[:, 2].reshape([-1, 1])
-            return results
-
-
+        if awd_in.shape[-1] == 3:
+            awd_out = self(awd_in[:, :2])
+            awd_out[:, :, 1] += awd_in[:, 2].reshape([-1, 1])
+            return awd_out
