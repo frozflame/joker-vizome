@@ -45,7 +45,7 @@ As length decreases continuously, height1 will become 0, and beta begin to decre
 
 
 def cot(x):
-    return 1./tan(x)
+    return 1. / tan(x)
 
 
 def make_array(data):
@@ -95,8 +95,8 @@ class ArrowDesigner(object):
         # elif self.threshold1 < length < self.threshold2:
         elif self.threshold1 < length < self.threshold2:
             data[1] = self.height2 * cot(self.alpha), self.height2
-            data[2] = length, (length-self.threshold1) * tan(self.beta)
-            data[3] = length, (length-self.threshold1) * tan(self.beta)
+            data[2] = length, (length - self.threshold1) * tan(self.beta)
+            data[3] = length, (length - self.threshold1) * tan(self.beta)
         else:
             data[1] = self.height2 * cot(self.alpha), self.height2
             data[2] = length, 0
@@ -137,8 +137,8 @@ class ArrowDesigner(object):
         # point 2 and point 3 are of same height
         # dt[:, 2, 1][mask0] = 0
         # dt[:, 3, 1][mask0] = 0
-        data[:, 2, 1][mask1] = ((lengths-self.threshold1) * tan(self.beta))[mask1]
-        data[:, 3, 1][mask1] = ((lengths-self.threshold1) * tan(self.beta))[mask1]
+        data[:, 2, 1][mask1] = ((lengths - self.threshold1) * tan(self.beta))[mask1]
+        data[:, 3, 1][mask1] = ((lengths - self.threshold1) * tan(self.beta))[mask1]
         data[:, 2, 1][mask2] = self.height1
         data[:, 3, 1][mask2] = self.height1
 

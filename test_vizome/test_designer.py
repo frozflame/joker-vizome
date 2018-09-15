@@ -7,10 +7,8 @@ import sys
 from math import sqrt
 
 import numpy as np
-from joker.vizome.designer import ArrowDesigner
 
-# from molbiox.frame.environ import locate_tests
-# from molbiox.visual.vizorf import render_vizorf
+from joker.vizome.designer import ArrowDesigner
 
 pi = np.pi
 
@@ -18,18 +16,18 @@ dataset1 = {
     'config': dict(alpha=pi / 4, beta=pi / 2, height1=1, height2=2),
     'lengths': [4],
     'awd_out': np.array([[
-        [0,  0], [2,  2], [2,  1], [4,  1],
-        [4, -1], [2, -1], [2, -2], [0,  0]
+        [0, 0], [2, 2], [2, 1], [4, 1],
+        [4, -1], [2, -1], [2, -2], [0, 0]
     ]])
 }
 
 dataset2 = {
     'config': dict(alpha=pi / 4, beta=pi / 3, height1=1, height2=2),
-    'lengths': [2 - sqrt(3)/2],
+    'lengths': [2 - sqrt(3) / 2],
     'awd_out': np.array([[
-        [0,  0], [2,  2],
-        [2 - sqrt(3)/2,  1./2], [2-sqrt(3)/2,  1./2],
-        [2 - sqrt(3)/2, -1./2], [2-sqrt(3)/2, -1./2],
+        [0, 0], [2, 2],
+        [2 - sqrt(3) / 2, 1. / 2], [2 - sqrt(3) / 2, 1. / 2],
+        [2 - sqrt(3) / 2, -1. / 2], [2 - sqrt(3) / 2, -1. / 2],
         [2, -2], [0, 0]
     ]])
 }
@@ -38,8 +36,8 @@ dataset3 = {
     'config': dict(alpha=pi / 4, beta=pi / 3, height1=1, height2=2),
     'lengths': [.6],
     'awd_out': np.array([[
-        [0,  0], [2,  2], [.6, 0], [.6, 0],
-        [.6, 0], [.6, 0], [2, -2], [0,  0]
+        [0, 0], [2, 2], [.6, 0], [.6, 0],
+        [.6, 0], [.6, 0], [2, -2], [0, 0]
     ]])
 }
 
@@ -62,11 +60,11 @@ def test_amk():
         assert arr_eq(resultp, ds['awd_out'][0], .001)
         # assert 1 == 2
 
-        for l in np.arange(10, step=.01):
-            if l == 0:
+        for x in np.arange(10, step=.01):
+            if x == 0:
                 continue
-            resultp = arrow_designer.prototype(l)
-            awd_out = arrow_designer([l])
+            resultp = arrow_designer.prototype(x)
+            awd_out = arrow_designer([x])
             assert arr_eq(awd_out[0], resultp, .001)
             assert arr_eq(awd_out[:, 0, :], 0, .001)
             assert arr_eq(awd_out[:, 7, :], 0, .001)

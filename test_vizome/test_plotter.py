@@ -7,6 +7,7 @@ import random
 
 import numpy as np
 import pandas
+
 from joker.vizome.designer import ArrowDesigner
 from joker.vizome.plotter import ArrowPlotter
 
@@ -36,7 +37,7 @@ def test_prepare_amk_input():
 
 
 def test_prepare_plot_data():
-    df = ArrowPlotter.read_csv('')
+    df = ArrowPlotter.read_csv('lwcexample.csv')
     print(df)
     for d in ArrowPlotter.prepare_plot_data(df):
         print(d)
@@ -45,4 +46,4 @@ def test_prepare_plot_data():
 if __name__ == '__main__':
     test_prepare_amk_input()
     test_prepare_polygon_data()
-    # test_prepare_plot_data()
+    test_prepare_plot_data()

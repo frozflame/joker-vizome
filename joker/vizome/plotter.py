@@ -5,9 +5,10 @@ from __future__ import division, print_function
 
 import numpy
 import pandas
-from joker.vizome.designer import ArrowDesigner
 from lxml.builder import E
 from lxml.etree import tostring
+
+from joker.vizome.designer import ArrowDesigner
 
 default_polygon_style = {
     'stroke-width': 1,
@@ -83,6 +84,3 @@ class ArrowPlotter(object):
         }
         elem = E.text(content, **attributes)
         return tostring(elem, encoding='unicode')
-
-
-
